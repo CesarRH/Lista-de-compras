@@ -4,6 +4,18 @@ package domain;
 public class Venta {
     
     int id;
+    String descripcio;
+    int cantidad;
+    double precio,importe;
+    String unidad;
+
+    public String getUnidad() {
+        return unidad;
+    }
+
+    public void setUnidad(String unidad) {
+        this.unidad = unidad;
+    }
 
     public int getId() {
         return id;
@@ -12,9 +24,7 @@ public class Venta {
     public void setId(int id) {
         this.id = id;
     }
-    String descripcio;
-    int cantidad;
-    double precio,importe;
+    
     
     public Venta(){
         

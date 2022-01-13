@@ -7,76 +7,95 @@ import javax.swing.table.DefaultTableModel;
 
 public class Main extends javax.swing.JFrame {
 
-    String productos [] = {"Naranja","Manzana","Platanos","Lechuga"
-            ,"Tomates","Leche","Queso","Huevos","Pollo"
-            ,"Jamon","Jugo de manzana","Café","Té","Pan de caja","Galletas saladas",
-            "Helado","Galletas","Servilletas"};
-    
-    double precios [] = {50,45,37,25,19,21.95,38.40,35,92,46.35,26.20,28.25,15,39.24,17.40,35.80,20.35,25.25};
+    String productos[] = {"Seleccionar...", "Naranja", "Manzana", "Platanos", "Lechuga",
+         "Tomates", "Leche", "Queso", "Huevos", "Pollo",
+         "Jamon", "Jugo de manzana", "Café", "Té", "Pan de caja", "Galletas saladas",
+        "Helado", "Galletas", "Servilletas"};
+
+    String unidad[] = {"...", "KG", "KG", "KG", "PZA",
+         "KG", "PZA", "KG", "KG", "KG",
+         "KG", "PZA", "TAZA", "TAZA", "PZA", "PZA",
+         "PZA", "PZA", "PZA"};
+
+    double precios[] = {0, 50, 45, 37, 25, 19, 21.95, 38.40, 35, 92, 46.35, 26.20, 28.25, 15, 39.24, 17.40, 35.80, 20.35, 25.25};
     double precio;
-    int cantidad=0;
-    
+    int cantidad = 0;
+    String unidadC;
+
     //Modificador de la tabla
     DefaultTableModel modelo = new DefaultTableModel();
-    ArrayList <Venta> listaVentas = new ArrayList<Venta>();
-    
+    ArrayList<Venta> listaVentas = new ArrayList<Venta>();
+
     public Main() {
         initComponents();
         this.setTitle("Tiendita");
         this.setLocationRelativeTo(null);
         calcularPrecio();
-        
+        unidad();
+
         DefaultComboBoxModel comboModel = new DefaultComboBoxModel(productos);
+        DefaultComboBoxModel comboModel2 = new DefaultComboBoxModel(unidad);
+
         modelo.addColumn("Precio");
         modelo.addColumn("Precio U");
         modelo.addColumn("Cantidad");
+        modelo.addColumn("Unidad");
         modelo.addColumn("Importe");
         actualizarTabla();
         this.jCProducto.setModel(comboModel);
+        //this.jCUnidad.setModel(comboModel2);
         calcularPrecio();
+        // jCUnidad.setVisible(false);
     }
-    
-    public void calcularPrecio(){
-        precio=precios[jCProducto.getSelectedIndex()];
-        cantidad=Integer.parseInt(jSpinner1.getValue().toString());
+
+    public void calcularPrecio() {
+        precio = precios[jCProducto.getSelectedIndex()];
+        cantidad = Integer.parseInt(jSpinner1.getValue().toString());
         jLPrecio.setText(aMoneda(precio));
-        jLImporte.setText(aMoneda(precio*cantidad));
+        //unidadC=unidad[jCUnidad.getSelectedIndex()];
+        jLImporte.setText(aMoneda(precio * cantidad));
     }
-    
-    public String aMoneda(double precio){
-        return "$ "+Math.round(precio*100.0)/100.0+" MXN";
-        
+
+    public void unidad() {
+        //unidadC=precios[jCProducto.getSelectedIndex()];
+        unidadC = unidad[jCProducto.getSelectedIndex()];
     }
-    
-    public void actualizarTabla(){
-        while(modelo.getRowCount()>0){
+
+    public String aMoneda(double precio) {
+        return "$ " + Math.round(precio * 100.0) / 100.0 + " MXN";
+
+    }
+
+    public void actualizarTabla() {
+        while (modelo.getRowCount() > 0) {
             modelo.removeRow(0);
         }
-        double subtotal=0;
-        for (Venta v : listaVentas){
-            Object x []= new Object[4];
-            x[0]=v.getDescripcio();
-            x[1]=aMoneda(v.getPrecio());
-            x[2]=v.getCantidad();
-            x[3]=aMoneda(v.getImporte());
-            subtotal+=v.getImporte();
+        double subtotal = 0;
+        for (Venta v : listaVentas) {
+            Object x[] = new Object[5];
+            x[0] = v.getDescripcio();
+            x[1] = aMoneda(v.getPrecio());
+            x[2] = v.getCantidad();
+            x[3] = v.getUnidad();
+            x[4] = aMoneda(v.getImporte());
+            subtotal += v.getImporte();
             modelo.addRow(x);
         }
-        
-        double descuento=0;
-        double total=0;
-        if (subtotal<=150){
-            descuento=subtotal*0.03;
-            total = subtotal-descuento;
-        }else if (subtotal >=151 && subtotal <=300){
-            descuento=subtotal*0.05;
-            total = subtotal-descuento;
-        }else if (subtotal >=301 && subtotal <=450){
-            descuento=subtotal*0.10;
-            total = subtotal-descuento;
-        }else if (subtotal >=451){
-            descuento=subtotal*0.15;
-            total = subtotal-descuento;
+
+        double descuento = 0;
+        double total = 0;
+        if (subtotal <= 150) {
+            descuento = subtotal * 0.03;
+            total = subtotal - descuento;
+        } else if (subtotal >= 151 && subtotal <= 300) {
+            descuento = subtotal * 0.05;
+            total = subtotal - descuento;
+        } else if (subtotal >= 301 && subtotal <= 450) {
+            descuento = subtotal * 0.10;
+            total = subtotal - descuento;
+        } else if (subtotal >= 451) {
+            descuento = subtotal * 0.15;
+            total = subtotal - descuento;
         }
         jLSubtotal.setText(aMoneda(subtotal));
         jLDescuento.setText(aMoneda(descuento));
@@ -111,25 +130,35 @@ public class Main extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jPanel1.setBackground(new java.awt.Color(40, 33, 57));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jLImporte.setBackground(new java.awt.Color(255, 255, 255));
         jLImporte.setFont(new java.awt.Font("Perpetua Titling MT", 1, 12)); // NOI18N
+        jLImporte.setForeground(new java.awt.Color(255, 255, 255));
         jLImporte.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLImporte.setText("$0.00 mxn");
         jPanel1.add(jLImporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 130, 100, 20));
 
+        jLabel2.setBackground(new java.awt.Color(255, 255, 255));
         jLabel2.setFont(new java.awt.Font("Perpetua Titling MT", 1, 18)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Lista de compras");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 190, -1));
 
+        jLProducto.setBackground(new java.awt.Color(255, 255, 255));
         jLProducto.setFont(new java.awt.Font("Perpetua Titling MT", 1, 12)); // NOI18N
+        jLProducto.setForeground(new java.awt.Color(255, 255, 255));
         jLProducto.setText("Producto");
         jPanel1.add(jLProducto, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 90, -1, 20));
 
+        jL1.setBackground(new java.awt.Color(255, 255, 255));
         jL1.setFont(new java.awt.Font("Perpetua Titling MT", 1, 12)); // NOI18N
+        jL1.setForeground(new java.awt.Color(255, 255, 255));
         jL1.setText("precio");
         jPanel1.add(jL1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 90, 60, 20));
 
+        jCProducto.setBackground(new java.awt.Color(0, 102, 51));
         jCProducto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         jCProducto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -138,20 +167,26 @@ public class Main extends javax.swing.JFrame {
         });
         jPanel1.add(jCProducto, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 90, -1, -1));
 
+        jLPrecio.setBackground(new java.awt.Color(255, 255, 255));
         jLPrecio.setFont(new java.awt.Font("Perpetua Titling MT", 1, 12)); // NOI18N
+        jLPrecio.setForeground(new java.awt.Color(255, 255, 255));
         jLPrecio.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLPrecio.setText("$0.00 mxn");
         jPanel1.add(jLPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 90, 100, 20));
 
+        jL5.setBackground(new java.awt.Color(255, 255, 255));
         jL5.setFont(new java.awt.Font("Perpetua Titling MT", 1, 12)); // NOI18N
+        jL5.setForeground(new java.awt.Color(255, 255, 255));
         jL5.setText("Total");
         jPanel1.add(jL5, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 480, 80, -1));
 
+        jL2.setBackground(new java.awt.Color(255, 255, 255));
         jL2.setFont(new java.awt.Font("Perpetua Titling MT", 1, 12)); // NOI18N
-        jL2.setText("Impiorte");
+        jL2.setForeground(new java.awt.Color(255, 255, 255));
+        jL2.setText("Importe");
         jPanel1.add(jL2, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 130, 80, 20));
 
-        jButton1.setBackground(new java.awt.Color(102, 255, 102));
+        jButton1.setBackground(new java.awt.Color(0, 102, 51));
         jButton1.setText("Agregar");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -166,36 +201,49 @@ public class Main extends javax.swing.JFrame {
                 jSpinner1StateChanged(evt);
             }
         });
-        jPanel1.add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 120, 50, 30));
+        jPanel1.add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 120, 70, 30));
 
+        jLCantidad1.setBackground(new java.awt.Color(255, 255, 255));
         jLCantidad1.setFont(new java.awt.Font("Perpetua Titling MT", 1, 12)); // NOI18N
+        jLCantidad1.setForeground(new java.awt.Color(255, 255, 255));
         jLCantidad1.setText("Cantidad");
         jPanel1.add(jLCantidad1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, 80, -1));
 
+        jLTotal.setBackground(new java.awt.Color(255, 255, 255));
         jLTotal.setFont(new java.awt.Font("Perpetua Titling MT", 1, 12)); // NOI18N
+        jLTotal.setForeground(new java.awt.Color(255, 255, 255));
         jLTotal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLTotal.setText("$0.00 mxn");
-        jPanel1.add(jLTotal, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 480, 80, -1));
+        jPanel1.add(jLTotal, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 480, 100, -1));
 
+        jL4.setBackground(new java.awt.Color(255, 255, 255));
         jL4.setFont(new java.awt.Font("Perpetua Titling MT", 1, 12)); // NOI18N
+        jL4.setForeground(new java.awt.Color(255, 255, 255));
         jL4.setText("descuento");
         jPanel1.add(jL4, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 450, 90, -1));
 
+        jL3.setBackground(new java.awt.Color(255, 255, 255));
         jL3.setFont(new java.awt.Font("Perpetua Titling MT", 1, 12)); // NOI18N
+        jL3.setForeground(new java.awt.Color(255, 255, 255));
         jL3.setText("Subtotal");
         jPanel1.add(jL3, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 420, 80, -1));
 
+        jLSubtotal.setBackground(new java.awt.Color(255, 255, 255));
         jLSubtotal.setFont(new java.awt.Font("Perpetua Titling MT", 1, 12)); // NOI18N
+        jLSubtotal.setForeground(new java.awt.Color(255, 255, 255));
         jLSubtotal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLSubtotal.setText("$0.00 mxn");
-        jPanel1.add(jLSubtotal, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 420, 80, -1));
+        jPanel1.add(jLSubtotal, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 420, 100, -1));
 
+        jLDescuento.setBackground(new java.awt.Color(255, 255, 255));
         jLDescuento.setFont(new java.awt.Font("Perpetua Titling MT", 1, 12)); // NOI18N
+        jLDescuento.setForeground(new java.awt.Color(255, 255, 255));
         jLDescuento.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLDescuento.setText("$0.00 mxn");
-        jPanel1.add(jLDescuento, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 450, 80, -1));
+        jPanel1.add(jLDescuento, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 450, 100, -1));
 
         jTable.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jTable.setForeground(new java.awt.Color(0, 102, 51));
         jTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -211,7 +259,7 @@ public class Main extends javax.swing.JFrame {
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 190, 540, 200));
 
-        jButton2.setBackground(new java.awt.Color(102, 255, 102));
+        jButton2.setBackground(new java.awt.Color(0, 102, 51));
         jButton2.setText("Pagar");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -248,50 +296,63 @@ public class Main extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        Venta venta= new Venta ();
-        venta.setId(jCProducto.getSelectedIndex());
-        venta.setDescripcio(jCProducto.getSelectedItem().toString());
-        venta.setPrecio(this.precio);
-        venta.setCantidad(cantidad);
-        venta.setImporte(precio*cantidad);
-        if(!buscarVenta(venta)){
+        Venta venta = new Venta();
+        if (jCProducto.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(this, "Seleccion invalida\nVuleva a intentar");
+            venta.setId(Integer.parseInt(""));
+            venta.setDescripcio("");
+            venta.setPrecio(Integer.parseInt(""));
+            venta.setCantidad(Integer.parseInt(""));
+            venta.setUnidad("");
+            venta.setImporte(Integer.parseInt(""));
+        } else {
+            venta.setId(jCProducto.getSelectedIndex());
+            venta.setDescripcio(jCProducto.getSelectedItem().toString());
+            venta.setPrecio(this.precio);
+            venta.setCantidad(cantidad);
+            venta.setUnidad(unidad[jCProducto.getSelectedIndex()]);
+            venta.setImporte(precio * cantidad);
+        }
+
+        if (!buscarVenta(venta)) {
             listaVentas.add(venta);
         }
-        
-       // listaVentas.add(venta);
+
+        // listaVentas.add(venta);
         actualizarTabla();
         borrarVenta();
-        
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "El totalde la compra es \n"
-                + this.jLTotal.getText()+"\nVuelva pronto");
+        JOptionPane.showMessageDialog(this, "El total de la compra es \n"
+                + this.jLTotal.getText() + "\nVuelva pronto");
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    public boolean buscarVenta(Venta nueva){
-        for (Venta v : listaVentas){
-            if (v.getId()==nueva.getId()){
-                int nuevaCantidad=v.getCantidad()+nueva.getCantidad();
+    public boolean buscarVenta(Venta nueva) {
+        for (Venta v : listaVentas) {
+            if (v.getId() == nueva.getId()) {
+                int nuevaCantidad = v.getCantidad() + nueva.getCantidad();
                 v.setCantidad(nuevaCantidad);
-                v.setImporte(v.getPrecio()*nuevaCantidad);
+                v.setImporte(v.getPrecio() * nuevaCantidad);
                 return true;
             }
         }
         return false;
     }
-    
-    public void borrarVenta(){
-        precio=0;
-        cantidad=1;
+
+    public void borrarVenta() {
+        precio = 0;
+        cantidad = 1;
         //jLPrecio.setText(aMoneda(0));
         //jLImporte.setText(aMoneda(0));
         jCProducto.setSelectedIndex(0);
         jSpinner1.setValue(1);
         calcularPrecio();
-        
+
     }
+
     /**
      * @param args the command line arguments
      */
